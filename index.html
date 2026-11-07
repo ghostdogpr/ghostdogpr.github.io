@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The ghostdogpr stack: Scala libraries by Pierre Ricadat</title>
+  <meta name="description" content="Open-source Scala libraries that each do one thing, and do it very well: Caliban, Shard, Sage, Proteus and PureLogic.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ghostdogpr.github.io/">
+  <meta property="og:title" content="The ghostdogpr stack">
+  <meta property="og:description" content="Open-source Scala libraries that each do one thing, and do it very well.">
+  <meta property="og:image" content="https://ghostdogpr.github.io/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The ghostdogpr stack: the Caliban, Shard, Sage, Proteus and PureLogic logos">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#16171a" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/inter-roman-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+    @font-face {
+      font-family: Inter;
+      src: url(fonts/inter-roman-latin.woff2) format("woff2");
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff;
+      --surface: #f6f6f7;
+      --surface-hover: #ffffff;
+      --text: #1b1b1f;
+      --muted: #5f6068;
+      --line: #e2e2e4;
+      --red: #cb4239;
+      --red-text: #bb362d;
+      --red-soft: rgba(203, 66, 57, .08);
+      --shadow: 0 10px 28px -14px rgba(27, 27, 31, .28);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #16171a;
+        --surface: #1f2125;
+        --surface-hover: #25272c;
+        --text: #eeeef0;
+        --muted: #a3a4ac;
+        --line: #303238;
+        --red-text: #f2807a;
+        --red-soft: rgba(203, 66, 57, .14);
+        --shadow: 0 10px 28px -14px rgba(0, 0, 0, .7);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 400 1rem/1.5 Inter, ui-sans-serif, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    a { color: inherit; }
+
+    a:focus-visible {
+      outline: 2px solid var(--red-text);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    .icon {
+      width: 1em;
+      height: 1em;
+      fill: currentColor;
+      flex: none;
+    }
+
+    /* Sizes are in rem, so large monitors only have to raise the root size. */
+    @media (min-width: 1600px) and (min-height: 900px) {
+      html { font-size: 18px; }
+    }
+
+    @media (min-width: 2200px) and (min-height: 1200px) {
+      html { font-size: 22px; }
+    }
+
+    /* Keeps the content centered in the viewport on tall screens. */
+    .page {
+      min-height: 100svh;
+      max-width: 82.5rem;
+      margin: 0 auto;
+      padding: 16px clamp(16px, 4vw, 3rem) 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: clamp(20px, 3.8vh, 3rem);
+      padding-top: clamp(16px, 2.4vh, 2rem);
+    }
+
+    /* Header */
+
+    .top nav {
+      display: flex;
+      justify-content: flex-end;
+      gap: 22px;
+    }
+
+    .top nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    .top nav a:hover { color: var(--text); }
+
+    /* Hero */
+
+    .hero {
+      display: grid;
+      grid-template-columns: auto auto;
+      justify-content: space-between;
+      align-items: end;
+      gap: 12px 48px;
+    }
+
+    h1 {
+      font-size: clamp(2.3rem, 5vw, 3.4rem);
+      font-weight: 750;
+      line-height: 1.06;
+      letter-spacing: -.035em;
+    }
+
+    h1 span { color: var(--red-text); }
+
+    .lead {
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.4vw, 1.14rem);
+      line-height: 1.45;
+    }
+
+    .lead a {
+      white-space: nowrap;
+      text-underline-offset: 3px;
+      text-decoration-color: var(--line);
+    }
+
+    .lead a:hover { color: var(--text); text-decoration-color: currentColor; }
+
+    /* Project cards */
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 18px 20px;
+      background: var(--surface);
+      border: 1px solid transparent;
+      border-radius: 14px;
+      transition: transform .18s ease, background-color .18s, border-color .18s, box-shadow .18s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      background: var(--surface-hover);
+      border-color: var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      height: 3.25rem;
+      margin-bottom: 12px;
+    }
+
+    .logo img {
+      display: block;
+      width: 3.25rem;
+      height: 3.25rem;
+      margin-left: var(--inset, 0);
+    }
+
+    .logo .wide { width: 6.125rem; height: 2.1875rem; }
+
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -.02em;
+    }
+
+    h2 a { text-decoration: none; }
+
+    /* The docs link covers the whole card. */
+    h2 a::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+    }
+
+    h2 a:focus-visible { outline: none; }
+
+    h2 a:focus-visible::after {
+      outline: 2px solid var(--red-text);
+      outline-offset: 2px;
+    }
+
+    .job {
+      margin-top: 2px;
+      color: var(--red-text);
+      font-size: 1rem;
+      font-weight: 650;
+      letter-spacing: -.01em;
+    }
+
+    .what {
+      margin-top: 8px;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: .875rem;
+      line-height: 1.42;
+    }
+
+    .actions {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .84rem;
+      font-weight: 600;
+    }
+
+    .docs .arrow {
+      display: inline-block;
+      transition: transform .18s ease;
+    }
+
+    .card:hover .docs .arrow { transform: translateX(3px); }
+
+    .star {
+      position: relative; /* sits above the card-wide docs link */
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 0;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    .star:hover { color: #d99a06; }
+
+    /* Philosophy */
+
+    .ideas {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(24px, 3vw, 44px);
+    }
+
+    .ideas h2 { font-size: 1.02rem; letter-spacing: -.01em; }
+
+    .ideas p {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.5;
+    }
+
+    /* Sponsor band */
+
+    .sponsor {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 18px;
+      padding: 14px 16px 14px 22px;
+      background: var(--red-soft);
+      border-radius: 14px;
+    }
+
+    .sponsor h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      margin-right: auto;
+    }
+
+    .sponsor p { color: var(--muted); font-size: .9rem; }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      background: var(--red);
+      border-radius: 9px;
+      color: #fff;
+      font-size: .92rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color .15s;
+    }
+
+    .button:hover { background: #b23229; }
+
+    /* Layouts */
+
+    @media (max-width: 1120px) {
+      .cards { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      .card { grid-column: span 2; }
+      .card:nth-child(-n+2) { grid-column: span 3; }
+    }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    @media (max-width: 760px) {
+      main { gap: 32px; justify-content: flex-start; }
+      .cards, .ideas { grid-template-columns: minmax(0, 1fr); }
+      .card, .card:nth-child(-n+2) { grid-column: auto; }
+      .ideas { gap: 20px; }
+      .sponsor { padding: 18px; }
+      .sponsor h2 { width: 100%; margin: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+      .card:hover { transform: none; }
+      .card:hover .docs .arrow { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <svg style="display: none">
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3.1-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21s-9-5.6-9-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.4-9 12-9 12z"/></symbol>
+    <symbol id="i-github" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></symbol>
+  </svg>
+
+  <div class="page">
+    <header class="top">
+      <nav aria-label="Elsewhere">
+        <a href="https://blog.pierre-ricadat.com/">Blog</a>
+        <a href="https://github.com/ghostdogpr"><svg class="icon" aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>The <span>ghostdogpr</span> stack</h1>
+        <p class="lead">Open-source Scala libraries built by <a href="https://github.com/ghostdogpr">Pierre Ricadat</a>.</p>
+      </section>
+
+      <section class="cards" aria-label="Projects">
+        <article class="card">
+          <div class="logo" style="--inset: -.44rem">
+            <picture>
+              <source media="(prefers-color-scheme: dark)" srcset="logos/caliban-dark.svg">
+              <img src="logos/caliban.svg" alt="" width="52" height="52">
+            </picture>
+          </div>
+          <h2><a href="/caliban/">Caliban</a></h2>
+          <p class="job">GraphQL</p>
+          <p class="what">Purely functional GraphQL servers and clients.</p>
+          <div class="actions">
+            <span class="docs">Docs <span class="arrow" aria-hidden="true">→</span></span>
+            <a class="star" href="https://github.com/ghostdogpr/caliban" aria-label="Star Caliban on GitHub"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>Star</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="logo" style="--inset: -.44rem"><img src="logos/shard.svg" alt="" width="52" height="52"></div>
+          <h2><a href="/shard/">Shard</a></h2>
+          <p class="job">Entity sharding</p>
+          <p class="what">Reach entities by ID, wherever they live.</p>
+          <div class="actions">
+            <span class="docs">Docs <span class="arrow" aria-hidden="true">→</span></span>
+            <a class="star" href="https://github.com/ghostdogpr/shard" aria-label="Star Shard on GitHub"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>Star</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="logo">
+            <picture>
+              <source media="(prefers-color-scheme: dark)" srcset="logos/sage-dark.svg">
+              <img class="wide" src="logos/sage.svg" alt="" width="98" height="35">
+            </picture>
+          </div>
+          <h2><a href="/sage/">Sage</a></h2>
+          <p class="job">Redis &amp; Valkey</p>
+          <p class="what">Native Scala 3 client, not a Java wrapper.</p>
+          <div class="actions">
+            <span class="docs">Docs <span class="arrow" aria-hidden="true">→</span></span>
+            <a class="star" href="https://github.com/ghostdogpr/sage" aria-label="Star Sage on GitHub"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>Star</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="logo" style="--inset: -.31rem"><img src="logos/proteus.svg" alt="" width="52" height="52"></div>
+          <h2><a href="/proteus/">Proteus</a></h2>
+          <p class="job">Protobuf &amp; gRPC</p>
+          <p class="what">Define it in Scala, generate the rest.</p>
+          <div class="actions">
+            <span class="docs">Docs <span class="arrow" aria-hidden="true">→</span></span>
+            <a class="star" href="https://github.com/ghostdogpr/proteus" aria-label="Star Proteus on GitHub"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>Star</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="logo" style="--inset: -.875rem"><img src="logos/purelogic.svg" alt="" width="52" height="52"></div>
+          <h2><a href="/purelogic/">PureLogic</a></h2>
+          <p class="job">Domain logic</p>
+          <p class="what">Direct-style, monad-free and lightning fast.</p>
+          <div class="actions">
+            <span class="docs">Docs <span class="arrow" aria-hidden="true">→</span></span>
+            <a class="star" href="https://github.com/ghostdogpr/purelogic" aria-label="Star PureLogic on GitHub"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>Star</a>
+          </div>
+        </article>
+      </section>
+
+      <section class="ideas" aria-label="Philosophy">
+        <div>
+          <h2>Do one thing, very well</h2>
+          <p>One job per library. Use one, or combine them.</p>
+        </div>
+        <div>
+          <h2>Performant and prod-ready</h2>
+          <p>Fast, used at companies I've worked at and beyond.</p>
+        </div>
+        <div>
+          <h2>Easy to adopt</h2>
+          <p>Great docs, and integrations across the ecosystem.</p>
+        </div>
+      </section>
+
+      <section class="sponsor" aria-label="Support">
+        <h2>Love these projects?</h2>
+        <a class="button" href="https://github.com/sponsors/ghostdogpr"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg>Sponsor me on GitHub</a>
+        <p>or simply star the ones you use</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
